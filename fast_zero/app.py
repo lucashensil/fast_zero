@@ -26,9 +26,19 @@ def read_users():
     return {'users': fake_db}
 
 
+@app.get('/users/{user_id}', response_model=UserPublic)
+def get_one_user(user_id: int):
+    if user_id > len(fake_db) or user_id < 1:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail='User Not Found'
+        )
+
+    return fake_db[user_id - 1]
+
+
 @app.put('/users/{user_id}', response_model=UserPublic)
 def update_user(user_id: int, user: UserSchema):
-    if user_id < len(fake_db) or user_id < 1:
+    if user_id > len(fake_db) or user_id < 1:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='User Not Found'
         )
@@ -41,7 +51,7 @@ def update_user(user_id: int, user: UserSchema):
 
 @app.delete('/users/{user_id}', response_model=Message)
 def delete_user(user_id: int):
-    if user_id < len(fake_db) or user_id < 1:
+    if user_id > len(fake_db) or user_id < 1:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='User Not Found'
         )
