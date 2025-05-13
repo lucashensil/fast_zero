@@ -7,6 +7,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+*.db
+databse.db
 # C extensions
 *.so
 
@@ -177,4 +179,3 @@ pyrightconfig.json
 
 # Generated using ignr.py - github.com/Antrikshy/ignr.py
 
-database.db
