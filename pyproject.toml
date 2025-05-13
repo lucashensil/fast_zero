@@ -38,7 +38,7 @@ addopts = '-p no:warnings'
 lint = 'ruff check'
 pre_format = 'ruff check --fix'
 format = 'ruff format'
-run = 'fastapi dev fast_zero/app.py'
+run = 'fastapi dev fast_zero/app.py --host 0.0.0.0'
 pre_test = 'task format'
 pytest-cov = "^6.1.1"
 test = 'pytest -s -x --cov=fast_zero -vv'
