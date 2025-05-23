@@ -24,7 +24,7 @@ def test_create_user_username_alredy_exists(client, user):
     response = client.post(
         '/users/',
         json={
-            'username': 'Teste',
+            'username': f'{user.username}',
             'email': 'teste0@email.com',
             'password': 'secret',
         },
@@ -39,7 +39,7 @@ def test_create_user_email_alredy_exists(client, user):
         '/users/',
         json={
             'username': 'teste0',
-            'email': 'teste@email.com',
+            'email': f'{user.email}',
             'password': 'secret',
         },
     )
@@ -71,8 +71,8 @@ def test_get_one_user(client, user):
     assert response.json() == user_schema
 
 
-def test_get_one_user_exception(client):
-    response = client.get('/users/999')
+def test_get_one_user_exception(client, user):
+    response = client.get(f'/users/{user.id + 1000}')
 
     assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json() == {'detail': 'User Not Found'}
@@ -97,9 +97,9 @@ def test_update_user(client, user, token):
     }
 
 
-def test_update_user_exception(client, token):
+def test_update_user_exception(client, token, other_user):
     response = client.put(
-        '/users/999',
+        f'/users/{other_user.id}',
         headers={'Authorization': f'Bearer {token}'},
         json={
             'username': 'henrique',
@@ -112,21 +112,12 @@ def test_update_user_exception(client, token):
     assert response.json() == {'detail': 'Not enough permissions'}
 
 
-def test_update_integraty_error(client, user, token):
-    client.post(
-        '/users',
-        json={
-            'username': 'henrique',
-            'email': 'henrique@exemplo.com',
-            'password': 'secret',
-        },
-    )
-
+def test_update_integraty_error(client, user, token, other_user):
     response_update = client.put(
         f'/users/{user.id}',
         headers={'Authorization': f'Bearer {token}'},
         json={
-            'username': 'henrique',
+            'username': f'{other_user.username}',
             'email': 'silva@exemplo.com',
             'password': 'newsecret',
         },
@@ -147,9 +138,9 @@ def test_delete_user(client, user, token):
     assert response.json() == {'message': 'User deleted'}
 
 
-def test_delete_user_exception(client, token):
+def test_delete_user_exception(client, token, other_user):
     response = client.delete(
-        '/users/999',
+        f'/users/{other_user.id}',
         headers={'Authorization': f'Bearer {token}'},
     )
     assert response.status_code == HTTPStatus.FORBIDDEN
