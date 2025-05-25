@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 import pytest
-from sqlalchemy import select
+from sqlalchemy.exc import DataError
 
 from fast_zero.models import Todo, TodoState
 
@@ -29,12 +29,11 @@ def test_create_todo(client, token, mock_db_time):
 
 @pytest.mark.asyncio
 async def test_create_todo_error(session, user, todo):
-    todo = todo.create(user_id=user.id, state='wrong')
-    session.add(todo)
-    await session.commit()
+    bad_todo = todo.create(user_id=user.id, state='wrong')
+    session.add(bad_todo)
 
-    with pytest.raises(LookupError):
-        await session.scalar(select(Todo))
+    with pytest.raises(DataError):
+        await session.commit()
 
 
 # ruff: noqa: PLR0913, PLR0917
